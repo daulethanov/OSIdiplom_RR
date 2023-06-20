@@ -1,0 +1,41 @@
+version: "3"
+
+services:
+
+  flask:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    ports:
+      - "5000"
+    volumes:
+      - media:/backend/uploads
+
+  database:
+    image: postgres:14.1-alpine
+    environment:
+      - POSTGRES_DB=osi
+      - POSTGRES_USER=osi
+      - POSTGRES_PASSWORD=osi
+    ports:
+      - "5432:5432"
+
+  nginx:
+    build: ./nginx
+    depends_on:
+      - flask
+    ports:
+      - "80:80"
+    volumes:
+      - media:/backend/uploads
+
+  react:
+    build:
+      context: ./frontend/my-app
+      dockerfile: Dockerfile
+    ports:
+      - "3000"
+
+
+volumes:
+  media:
